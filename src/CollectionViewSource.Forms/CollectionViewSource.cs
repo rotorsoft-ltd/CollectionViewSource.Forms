@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Xamarin.Forms;
 
 namespace Rotorsoft.Forms
 {
     public class CollectionViewSource : BindableObject
     {
-        private SortDescriptionCollection _sortDescriptions;
-
         public static readonly BindableProperty SourceProperty = BindableProperty.Create(
             nameof(Source),
             typeof(IEnumerable<object>),
@@ -15,21 +15,23 @@ namespace Rotorsoft.Forms
             defaultValue: null,
             propertyChanged: OnSourceChanged);
 
-        public static readonly BindableProperty ViewProperty = BindableProperty.Create(
+        public static BindableProperty FilterProperty = BindableProperty.Create(
+            nameof(Filter),
+            typeof(Predicate<object>),
+            typeof(CollectionViewSource),
+            defaultValue: null,
+            propertyChanged: OnFilterChanged);
+
+        public static BindableProperty ViewProperty = BindableProperty.Create(
             nameof(View),
             typeof(ICollectionView),
             typeof(CollectionViewSource),
-            defaultValue: null);
-
-        public static BindableProperty FilterDelegateProperty = BindableProperty.Create(
-            nameof(FilterDelegate),
-            typeof(Func<object, bool>),
-            typeof(CollectionViewSource),
-            defaultValue: null);
+            defaultValue: null,
+            propertyChanged: OnViewChanged);
 
         public CollectionViewSource()
         {
-            _sortDescriptions = new SortDescriptionCollection();
+            SortDescriptions = new SortDescriptionCollection();
         }
 
         public IEnumerable<object> Source
@@ -38,23 +40,33 @@ namespace Rotorsoft.Forms
             set => SetValue(SourceProperty, value);
         }
 
+        public Predicate<object> Filter
+        {
+            get => (Predicate<object>)GetValue(FilterProperty);
+            set => SetValue(FilterProperty, value);
+        }
+
         public ICollectionView View
         {
             get => (ICollectionView)GetValue(ViewProperty);
             private set => SetValue(ViewProperty, value);
         }
 
-        public Func<object, bool> FilterDelegate
+        public SortDescriptionCollection SortDescriptions { get; }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        private void OnFilterChanged(Predicate<object> oldValue, Predicate<object> newValue)
         {
-            get => (Func<object, bool>)GetValue(FilterDelegateProperty);
-            set => SetValue(FilterDelegateProperty, value);
+            if (View != null)
+            {
+                View.Filter = newValue;
+            }
         }
 
-        public SortDescriptionCollection SortDescriptions => _sortDescriptions;
-
-        private void OnSourceChanged(IEnumerable<object> oldValue, IEnumerable<object> newValue)
+        private void OnSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            ICollectionView newView = null;
+            ICollectionView newView = null; 
 
             if (newValue != null)
             {
@@ -64,11 +76,30 @@ namespace Rotorsoft.Forms
             View = newView;
         }
 
+        private void OnViewChanged(ICollectionView oldValue, ICollectionView newValue)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        private static void OnFilterChanged(BindableObject bindableObject, object oldValue, object newValue)
+        {
+            var collectionViewSource = bindableObject as CollectionViewSource;
+
+            collectionViewSource?.OnFilterChanged(oldValue as Predicate<object>, newValue as Predicate<object>);
+        }
+
         private static void OnSourceChanged(BindableObject bindableObject, object oldValue, object newValue)
         {
             var collectionViewSource = bindableObject as CollectionViewSource;
 
-            collectionViewSource?.OnSourceChanged(oldValue as IEnumerable<object>, newValue as IEnumerable<object>);
+            collectionViewSource?.OnSourceChanged(oldValue as IEnumerable, newValue as IEnumerable);
+        }
+
+        private static void OnViewChanged(BindableObject bindableObject, object oldValue, object newValue)
+        {
+            var collectionViewSource = bindableObject as CollectionViewSource;
+
+            collectionViewSource?.OnViewChanged(oldValue as ICollectionView, newValue as ICollectionView);
         }
     }
 }
