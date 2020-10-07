@@ -16,7 +16,7 @@ namespace SampleApp.Models
         public string LastName { get; set; }
 
         [JsonProperty]
-        public string Gender { get; set; }
+        public string Sex { get; set; }
 
         [JsonProperty]
         public DateTime Dob { get; set; }

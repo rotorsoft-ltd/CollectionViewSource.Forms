@@ -71,6 +71,8 @@ namespace Rotorsoft.Forms
             if (newValue != null)
             {
                 newView = new CollectionView(newValue);
+                // TODO: Deferred set of all properties
+                newView.Filter = Filter;
             }
 
             View = newView;

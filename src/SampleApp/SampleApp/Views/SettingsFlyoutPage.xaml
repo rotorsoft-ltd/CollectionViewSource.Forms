@@ -1,16 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:SampleApp.ViewModels"
              x:Class="SampleApp.Views.SettingsFlyoutPage"
-             Title="SampleApp">
+             Title="SampleApp"
+             x:DataType="viewmodels:MainPageViewModel">
 
     <ContentPage.Content>
         <StackLayout
             Margin="10">
             
             <Label Text="Filtering" />
+
+            <StackLayout Orientation="Horizontal">
+
+                <CheckBox
+                    Margin="0,0,10,0"
+                    IsChecked="{Binding MustHaveProfilePicture, Mode=TwoWay}"/>
+                <Label
+                    Text="Must have profile picture"
+                    VerticalOptions="Center"/>
+                
+            </StackLayout>
+            
             <Label Text="Sorting" />
-            <Label Text="Grouping" TextColor="Black" />
+            <Label Text="Grouping" />
             
         </StackLayout>
     </ContentPage.Content>
