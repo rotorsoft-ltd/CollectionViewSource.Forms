@@ -2,56 +2,27 @@
 <MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                   xmlns:viewmodels="clr-namespace:SampleApp.ViewModels"
-                  xmlns:rotorsoft="clr-namespace:Rotorsoft.Forms;assembly=CollectionViewSource.Forms"
-                  xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+                  xmlns:views="clr-namespace:SampleApp.Views"
                   x:Class="SampleApp.Views.MainPage"
-                  MasterBehavior="Popover"
-                  x:DataType="viewmodels:MainPageViewModel">
+                  MasterBehavior="Default"
+                  x:Name="_root">
 
     <MasterDetailPage.BindingContext>
         <viewmodels:MainPageViewModel />
     </MasterDetailPage.BindingContext>
 
-    <MasterDetailPage.Resources>
-        <rotorsoft:CollectionViewSource
-            x:Key="DataSource"
-            Source="{Binding Items}"
-            FilterDelegate="{Binding FilterDelegate}">
-
-            <!--
-            BindingContext="{Binding ViewModel, Source={RelativeSource AncestorType={x:Type MasterDetailPage}}}"
-            -->
-            
-            <rotorsoft:CollectionViewSource.BindingContext>
-                <viewmodels:MainPageViewModel />
-            </rotorsoft:CollectionViewSource.BindingContext>
-        </rotorsoft:CollectionViewSource>
-    </MasterDetailPage.Resources>
-
     <MasterDetailPage.Master>
-        <ContentPage
-            Title="SampleApp"
-            BackgroundColor="White">
-            <StackLayout>
-                
-            </StackLayout>
-        </ContentPage>
+        <views:SettingsFlyoutPage
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference _root}, Mode=OneWay}" />
     </MasterDetailPage.Master>
 
     <MasterDetailPage.Detail>
-        <ContentPage
-            BackgroundColor="White">
-            <Grid>
-                <CollectionView ItemsSource="{Binding View, Source={StaticResource DataSource}, Mode=OneWay}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="x:String">
-                            <Label Text="{Binding}" HorizontalOptions="Fill" BackgroundColor="Red" TextColor="Black" />
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-        </ContentPage>
+        <NavigationPage>
+            <x:Arguments>
+                <views:DetailPage 
+                    BindingContext="{Binding Path=BindingContext, Source={x:Reference _root}, Mode=OneWay}" />
+            </x:Arguments>
+        </NavigationPage>
     </MasterDetailPage.Detail>
 
 </MasterDetailPage>

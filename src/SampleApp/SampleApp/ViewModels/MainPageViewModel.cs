@@ -1,26 +1,26 @@
-﻿using System;
+﻿using SampleApp.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace SampleApp.ViewModels
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<string> _items = new ObservableCollection<string>();
+        private ObservableCollection<PersonModel> _items = new ObservableCollection<PersonModel>();
 
         public MainPageViewModel()
         {
-            _items.Add("a");
-            _items.Add("b");
-            _items.Add("c");
-
             FilterDelegate = (o) =>
             {
+                // var c = (string)o;
+
                 return true;
             };
         }
 
-        public ObservableCollection<string> Items
+        public ObservableCollection<PersonModel> Items
         {
             get =>  _items;
             set
@@ -36,10 +36,14 @@ namespace SampleApp.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Func<object, bool> FilterDelegate
+        public Predicate<object> FilterDelegate
         {
             get;
             set;
+        }
+
+        public async Task LoadDataAsync()
+        {
         }
 
         private void RaisePropertyChanged(string propertyName)

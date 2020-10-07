@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleApp.Views.SettingsFlyoutPage"
+             Title="SampleApp">
+
+    <ContentPage.Content>
+        <StackLayout
+            Margin="10">
+            
+            <Label Text="Filtering" />
+            <Label Text="Sorting" />
+            <Label Text="Grouping" TextColor="Black" />
+            
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
