@@ -1,6 +1,9 @@
+using Rotorsoft.Forms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using Xunit;
 
@@ -128,6 +131,34 @@ namespace CollectionViewSource.Forms.UnitTests
         }
 
         [Fact]
+        public void SortDescriptionsSetWithEnumerable()
+        {
+            var items = new TestEnumerable(new TestModel[0]);
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+
+            var sortDescriptions = new ObservableCollection<SortDescription>()
+            {
+                new SortDescription(nameof(TestModel.Name), ListSortDirection.Ascending)
+            };
+
+            Assert.Throws<InvalidOperationException>(() => cvs.SortDescriptions = sortDescriptions);
+        }
+
+        [Fact]
+        public void SortDescriptionsAddWithEnumerable()
+        {
+            var items = new TestEnumerable(new TestModel[0]);
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>();
+
+            Assert.Throws<InvalidOperationException>(() => cvs.SortDescriptions.Add(new SortDescription(nameof(TestModel.Name), ListSortDirection.Ascending)));
+        }
+
+        [Fact]
         public void RemoveFilter()
         {
             var items = new List<object>()
@@ -148,6 +179,94 @@ namespace CollectionViewSource.Forms.UnitTests
             cvs.Filter = null;
 
             Assert.Equal(3, cvs.View.Count());
+        }
+
+        [Fact]
+        public void SortDescriptionsSingleAscending()
+        {
+            var items = new List<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Chelsey MacCaig", 47),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>()
+            {
+                new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending),
+            };
+
+            Assert.Equal(9, cvs.View.GetItemAt<TestModel>(0).Score);
+            Assert.Equal(47, cvs.View.GetItemAt<TestModel>(4).Score);
+        }
+
+        [Fact]
+        public void SortDescriptionsSingleDescending()
+        {
+            var items = new List<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Chelsey MacCaig", 47),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>()
+            {
+                new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending),
+            };
+
+            Assert.Equal(47, cvs.View.GetItemAt<TestModel>(0).Score);
+            Assert.Equal(9, cvs.View.GetItemAt<TestModel>(4).Score);
+        }
+
+        [Fact]
+        public void SortDescriptionsAddSingleAscending()
+        {
+            var items = new List<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Chelsey MacCaig", 47),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>();
+            cvs.SortDescriptions.Add(new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending));
+
+            Assert.Equal(9, cvs.View.GetItemAt<TestModel>(0).Score);
+            Assert.Equal(47, cvs.View.GetItemAt<TestModel>(4).Score);
+        }
+
+        [Fact]
+        public void SortDescriptionsAddSingleDescending()
+        {
+            var items = new List<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Chelsey MacCaig", 47),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>();
+            cvs.SortDescriptions.Add(new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending));
+
+            Assert.Equal(47, cvs.View.GetItemAt<TestModel>(0).Score);
+            Assert.Equal(9, cvs.View.GetItemAt<TestModel>(4).Score);
         }
     }
 
