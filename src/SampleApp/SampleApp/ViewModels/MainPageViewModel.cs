@@ -4,9 +4,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace SampleApp.ViewModels
 {
@@ -16,10 +17,19 @@ namespace SampleApp.ViewModels
 
         private Predicate<object> _filter;
 
+        private ObservableCollection<string> _sexChoices = new ObservableCollection<string>();
+        private string _selectedSex;
         private bool _mustHaveProfilePicture;
+        private double _minimumAge;
 
         public MainPageViewModel()
         {
+            _sexChoices.Add("Any");
+            _sexChoices.Add("Male");
+            _sexChoices.Add("Female");
+
+            _selectedSex = _sexChoices.First();
+
             Filter = (p) => FilterPerson(p as PersonModel);
         }
 
@@ -32,7 +42,7 @@ namespace SampleApp.ViewModels
                 {
                     _items = value;
 
-                    RaisePropertyChanged(nameof(Items));
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -46,7 +56,23 @@ namespace SampleApp.ViewModels
                 {
                     _filter = value;
 
-                    RaisePropertyChanged(nameof(Filter));
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public ObservableCollection<string> SexChoices => _sexChoices;
+
+        public string SelectedSex
+        {
+            get => _selectedSex;
+            set
+            {
+                if (_selectedSex != value)
+                {
+                    _selectedSex = value;
+
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -60,7 +86,21 @@ namespace SampleApp.ViewModels
                 {
                     _mustHaveProfilePicture = value;
 
-                    RaisePropertyChanged(nameof(MustHaveProfilePicture));
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public double MinimumAge
+        {
+            get => _minimumAge;
+            set
+            {
+                if (_minimumAge != value)
+                {
+                    _minimumAge = value;
+
+                    RaisePropertyChanged();
                 }
             }
         }
@@ -79,7 +119,7 @@ namespace SampleApp.ViewModels
                         serializer.DateFormatString = "dd/MM/yyyy";
                         var people = serializer.Deserialize<PersonModel[]>(jsonReader);
 
-                        Items = new ObservableCollection<PersonModel>(people);
+                        Items = new ObservableCollection<PersonModel>(people.Take(100));
                     }
                 }
             }
@@ -97,12 +137,23 @@ namespace SampleApp.ViewModels
                 return false;
             }
 
+            // Approximate age calculation
+            var age = DateTime.Now.Year - person.Dob.Year;
+
+            if (age < MinimumAge)
+            {
+                return false;
+            }
+
             return true;
         }
 
-        private void RaisePropertyChanged(string propertyName)
+        private void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (!string.IsNullOrWhiteSpace(propertyName))
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

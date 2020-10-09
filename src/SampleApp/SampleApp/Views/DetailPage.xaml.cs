@@ -38,7 +38,9 @@ namespace SampleApp.Views
 
         private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ViewModel.MustHaveProfilePicture))
+            if (e.PropertyName == nameof(ViewModel.MustHaveProfilePicture) ||
+                e.PropertyName == nameof(ViewModel.MinimumAge) ||
+                e.PropertyName == nameof(ViewModel.SelectedSex))
             {
                 (Resources["DataSource"] as CollectionViewSource)?.View?.Refresh();
             }

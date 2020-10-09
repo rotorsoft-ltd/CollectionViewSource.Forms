@@ -37,7 +37,8 @@
                             HeightRequest="100"
                             Source="{Binding Avatar}"
                             LoadingPlaceholder="PlaceholderAvatar.png"
-                            ErrorPlaceholder="PlaceholderAvatar.png">
+                            ErrorPlaceholder="PlaceholderAvatar.png"
+                            DownsampleToViewSize="True">
 
                             <ffImageLoading:CachedImage.Transformations>
                                 <transformations:CircleTransformation

@@ -1,25 +1,32 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using Xamarin.Forms;
 
 namespace Rotorsoft.Forms
 {
     internal class CollectionView : ICollectionView
     {
+        private int _deferLevel;
+        private bool _needsRefresh;
+
         private Predicate<object> _filter;
+        private ObservableCollection<SortDescription> _sortDescriptions;
 
         public CollectionView(IEnumerable collection)
         {
             SourceCollection = collection;
+            SortDescriptions = new ObservableCollection<SortDescription>();
         }
 
-        public bool CanFilter => true;
+        public virtual bool CanFilter => true;
 
-        public bool CanGroup => throw new NotImplementedException();
+        public virtual bool CanGroup => false;
 
-        public bool CanSort => throw new NotImplementedException();
+        public virtual bool CanSort => false;
 
-        public Predicate<object> Filter
+        public virtual Predicate<object> Filter
         {
             get => _filter;
             set
@@ -31,34 +38,147 @@ namespace Rotorsoft.Forms
 
                 _filter = value;
 
-                Refresh();
+                RefreshOrDefer();
             }
         }
 
-        public bool IsEmpty => throw new NotImplementedException();
+        public bool IsEmpty
+        {
+            get
+            {
+                if (SourceCollection is ICollection collection)
+                {
+                    return collection.Count == 0;
+                }
 
-        public IEnumerable SourceCollection { get; }
+                var enumerator = GetEnumerator();
+                var empty = !enumerator.MoveNext();
+
+                if (enumerator is IDisposable disposableEnumerator)
+                {
+                    disposableEnumerator.Dispose();
+                }
+
+                return empty;
+            }
+        }
+
+        public virtual ObservableCollection<SortDescription> SortDescriptions
+        {
+            get => _sortDescriptions;
+            private set
+            {
+                if (_sortDescriptions != null)
+                {
+                    _sortDescriptions.CollectionChanged -= SortDescriptions_CollectionChanged;
+                }
+
+                _sortDescriptions = value;
+
+                if (_sortDescriptions != null)
+                {
+                    _sortDescriptions.CollectionChanged += SortDescriptions_CollectionChanged;
+                }
+            }
+        }
+
+        private void SortDescriptions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!CanSort)
+            {
+                throw new NotSupportedException();
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (SortDescription newItem in e.NewItems)
+                {
+                    newItem.Seal();
+                }
+            }
+
+            RefreshOrDefer();
+        }
+
+        public virtual IEnumerable SourceCollection { get; }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public bool Contains(object item)
+        public virtual bool Contains(object item)
         {
-            throw new NotImplementedException();
+            var index = -1;
+            var i = 0;
+            var enumerator = GetEnumerator();
+
+            while (enumerator.MoveNext())
+            {
+                if (object.Equals(enumerator.Current, item))
+                {
+                    index = i;
+
+                    break;
+                }
+
+                ++i;
+            }
+
+            if (enumerator is IDisposable disposableEnumerator)
+            {
+                disposableEnumerator.Dispose();
+            }
+
+            return index >= 0;
         }
 
-        public IDisposable DeferRefresh()
+        public virtual IDisposable DeferRefresh()
         {
-            throw new NotImplementedException();
+            ++_deferLevel;
+
+            return new DeferHelper(this);
         }
 
-        public IEnumerator GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public virtual void Refresh()
+        {
+            RefreshInternal();
+        }
+
+        protected virtual IEnumerator GetEnumerator()
         {
             return new FilteredEnumerator(SourceCollection, Filter);
         }
 
-        public void Refresh()
+        internal void RefreshInternal()
         {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            _needsRefresh = false;
+        }
+
+        internal void EndDefer()
+        {
+            --_deferLevel;
+
+            if (_deferLevel == 0 && _needsRefresh)
+            {
+                Refresh();
+            }
+        }
+
+        protected void RefreshOrDefer()
+        {
+            if (_deferLevel > 0)
+            {
+                _needsRefresh = true;
+            }
+            else
+            {
+                RefreshInternal();
+            }
         }
     }
 }

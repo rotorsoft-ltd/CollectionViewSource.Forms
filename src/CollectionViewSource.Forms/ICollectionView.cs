@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace Rotorsoft.Forms
@@ -35,6 +37,17 @@ namespace Rotorsoft.Forms
         /// </summary>
         /// <value><c>true</c> if the resulting view is empty; otherwise, <c>false</c>.</value>
         bool IsEmpty { get; }
+
+        /// <summary>
+        /// Collection of Sort criteria to sort items in this view over the SourceCollection.
+        /// </summary>
+        /// <remarks>
+        /// <p>
+        /// One or more sort criteria in form of <see cref="Rotorsoft.Forms.SortDescription"/>
+        /// can be added, each specifying a property and direction to sort by.
+        /// </p>
+        /// </remarks>
+        ObservableCollection<SortDescription> SortDescriptions { get; }
 
         /// <summary>
         /// Returns the underlying collection.

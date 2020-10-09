@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Rotorsoft.Forms
 {
-    public struct SortDescription
+    public class SortDescription
     {
         private string _propertyName;
         private ListSortDirection _direction;
@@ -14,14 +15,23 @@ namespace Rotorsoft.Forms
                 throw new InvalidEnumArgumentException(nameof(direction), (int)direction, typeof(ListSortDirection));
             }
 
-            _direction = direction;
             _propertyName = propertyName;
+            _direction = direction;
+            IsSealed = false;
         }
 
         public string PropertyName
         {
             get => _propertyName;
-            set => _propertyName = value;
+            set
+            {
+                if (IsSealed)
+                {
+                    throw new InvalidOperationException("Cannot change SortDescription after it has been sealed.");
+                }
+
+                _propertyName = value;
+            }
         }
 
         public ListSortDirection Direction
@@ -29,6 +39,11 @@ namespace Rotorsoft.Forms
             get => _direction;
             set
             {
+                if (IsSealed)
+                {
+                    throw new InvalidOperationException("Cannot change SortDescription after it has been sealed.");
+                }
+
                 if (value != ListSortDirection.Ascending && value != ListSortDirection.Descending)
                 {
                     throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(ListSortDirection));
@@ -36,6 +51,17 @@ namespace Rotorsoft.Forms
 
                 _direction = value;
             }
+        }
+
+        public bool IsSealed
+        {
+            get;
+            private set;
+        }
+
+        internal void Seal()
+        {
+            IsSealed = true;
         }
     }
 }

@@ -24,12 +24,10 @@ namespace Rotorsoft.Forms
 
             if (_filterCallback == null)
             {
-                returnValue = _enumerator.MoveNext();
+                return _enumerator.MoveNext();
             }
-            else
-            {
-                while ((returnValue = _enumerator.MoveNext()) && !_filterCallback(_enumerator.Current)) ;
-            }
+
+            while ((returnValue = _enumerator.MoveNext()) && !_filterCallback(_enumerator.Current));
 
             return returnValue;
         }

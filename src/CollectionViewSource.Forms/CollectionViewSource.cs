@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 using Xamarin.Forms;
 
 namespace Rotorsoft.Forms
@@ -26,12 +26,18 @@ namespace Rotorsoft.Forms
             nameof(View),
             typeof(ICollectionView),
             typeof(CollectionViewSource),
+            defaultValue: null);
+
+        public static BindableProperty SortDescriptionsProperty = BindableProperty.Create(
+            nameof(SortDescriptions),
+            typeof(ObservableCollection<SortDescription>),
+            typeof(CollectionViewSource),
             defaultValue: null,
-            propertyChanged: OnViewChanged);
+            propertyChanged: OnSortDescriptionsChanged);
 
         public CollectionViewSource()
         {
-            SortDescriptions = new SortDescriptionCollection();
+            SortDescriptions = new ObservableCollection<SortDescription>();
         }
 
         public IEnumerable<object> Source
@@ -52,35 +58,103 @@ namespace Rotorsoft.Forms
             private set => SetValue(ViewProperty, value);
         }
 
-        public SortDescriptionCollection SortDescriptions { get; }
+        public ObservableCollection<SortDescription> SortDescriptions
+        {
+            get => (ObservableCollection<SortDescription>)GetValue(SortDescriptionsProperty);
+            set => SetValue(SortDescriptionsProperty, value);
+        }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        private void ApplyPropertiesToView(ICollectionView collectionView)
+        {
+            if (collectionView == null)
+            {
+                return;
+            }
+
+            using (var deferral = collectionView.DeferRefresh())
+            {
+                if (!collectionView.CanFilter)
+                {
+                    if (Filter != null)
+                    {
+                        throw new InvalidOperationException("Current CollectionView does not support filtering.");
+                    }
+                }
+                else
+                {
+                    collectionView.Filter = Filter;
+                }
+
+                if (!collectionView.CanSort)
+                {
+                    if (SortDescriptions != null &&
+                        SortDescriptions.Count > 0)
+                    {
+                        throw new InvalidOperationException("Current CollectionView does not support sorting.");
+                    }
+                }
+                else
+                {
+                    collectionView.SortDescriptions.Clear();
+
+                    if (SortDescriptions != null)
+                    {
+                        for (int i = 0; i < SortDescriptions.Count; ++i)
+                        {
+                            collectionView.SortDescriptions.Add(SortDescriptions[i]);
+                        }
+                    }
+                }
+            }
+        }
 
         private void OnFilterChanged(Predicate<object> oldValue, Predicate<object> newValue)
         {
-            if (View != null)
-            {
-                View.Filter = newValue;
-            }
+            ApplyPropertiesToView(View);
         }
 
         private void OnSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            ICollectionView newView = null; 
+            ICollectionView newView = null;
 
             if (newValue != null)
             {
-                newView = new CollectionView(newValue);
-                // TODO: Deferred set of all properties
-                newView.Filter = Filter;
+                if (newValue is IList newList)
+                {
+                    newView = new ListCollectionView(newList);
+                }
+                else
+                { 
+                    newView = new CollectionView(newValue);
+                }
+
+                ApplyPropertiesToView(newView);
             }
 
             View = newView;
         }
 
-        private void OnViewChanged(ICollectionView oldValue, ICollectionView newValue)
+        private void OnSortDescriptionsChanged(ObservableCollection<SortDescription> oldValue, ObservableCollection<SortDescription> newValue)
         {
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            if (oldValue != null)
+            {
+                oldValue.CollectionChanged -= SortDescriptions_CollectionChanged;
+            }
+
+            if (View != null)
+            {
+                ApplyPropertiesToView(View);
+            }
+
+            if (newValue != null)
+            {
+                newValue.CollectionChanged += SortDescriptions_CollectionChanged;
+            }
+        }
+
+        private void SortDescriptions_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            ApplyPropertiesToView(View);
         }
 
         private static void OnFilterChanged(BindableObject bindableObject, object oldValue, object newValue)
@@ -97,11 +171,11 @@ namespace Rotorsoft.Forms
             collectionViewSource?.OnSourceChanged(oldValue as IEnumerable, newValue as IEnumerable);
         }
 
-        private static void OnViewChanged(BindableObject bindableObject, object oldValue, object newValue)
+        private static void OnSortDescriptionsChanged(BindableObject bindableObject, object oldValue, object newValue)
         {
             var collectionViewSource = bindableObject as CollectionViewSource;
 
-            collectionViewSource?.OnViewChanged(oldValue as ICollectionView, newValue as ICollectionView);
+            collectionViewSource?.OnSortDescriptionsChanged(oldValue as ObservableCollection<SortDescription>, newValue as ObservableCollection<SortDescription>);
         }
     }
 }

@@ -8,5 +8,10 @@ namespace SampleApp.Views
         {
             InitializeComponent();
         }
+
+        private void MustHaveProfilePictureLabel_Tapped(object sender, System.EventArgs e)
+        {
+            MustHaveProfilePictureCheckBox.IsChecked = !MustHaveProfilePictureCheckBox.IsChecked;
+        }
     }
 }
