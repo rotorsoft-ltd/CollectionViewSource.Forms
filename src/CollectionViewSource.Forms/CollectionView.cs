@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Xamarin.Forms;
 
 namespace Rotorsoft.Forms
 {
@@ -152,8 +151,14 @@ namespace Rotorsoft.Forms
             return new FilteredEnumerator(SourceCollection, Filter);
         }
 
+        protected virtual void RefreshOverride()
+        {
+        }
+
         internal void RefreshInternal()
         {
+            RefreshOverride();
+
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
             _needsRefresh = false;

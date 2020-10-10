@@ -1,16 +1,18 @@
-﻿using System.Reflection;
-
-namespace Rotorsoft.Forms
+﻿namespace Rotorsoft.Forms
 {
     internal struct SortPropertyInfo
     {
-        public int Index;
-        public PropertyInfo Info;
+        public string PropertyName;
         public bool IsDescending;
 
         public object GetValue(object o)
         {
-            return Info.GetValue(o);
+            if (string.IsNullOrWhiteSpace(PropertyName))
+            {
+                return o;
+            }
+
+            return o.GetType().GetProperty(PropertyName).GetValue(o);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Xamarin.Forms;
 
 namespace Rotorsoft.Forms
@@ -116,6 +117,7 @@ namespace Rotorsoft.Forms
         private void OnSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
             ICollectionView newView = null;
+            ICollectionView oldView = View;
 
             if (newValue != null)
             {
@@ -132,6 +134,11 @@ namespace Rotorsoft.Forms
             }
 
             View = newView;
+
+            if (oldView is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
 
         private void OnSortDescriptionsChanged(ObservableCollection<SortDescription> oldValue, ObservableCollection<SortDescription> newValue)
@@ -152,7 +159,7 @@ namespace Rotorsoft.Forms
             }
         }
 
-        private void SortDescriptions_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void SortDescriptions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ApplyPropertiesToView(View);
         }

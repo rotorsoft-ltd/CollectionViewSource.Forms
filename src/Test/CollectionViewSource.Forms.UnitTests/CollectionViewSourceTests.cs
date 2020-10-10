@@ -220,7 +220,7 @@ namespace CollectionViewSource.Forms.UnitTests
             cvs.Source = items;
             cvs.SortDescriptions = new ObservableCollection<SortDescription>()
             {
-                new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending),
+                new SortDescription(nameof(TestModel.Score), ListSortDirection.Descending),
             };
 
             Assert.Equal(47, cvs.View.GetItemAt<TestModel>(0).Score);
@@ -263,10 +263,87 @@ namespace CollectionViewSource.Forms.UnitTests
             var cvs = new Rotorsoft.Forms.CollectionViewSource();
             cvs.Source = items;
             cvs.SortDescriptions = new ObservableCollection<SortDescription>();
-            cvs.SortDescriptions.Add(new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending));
+            cvs.SortDescriptions.Add(new SortDescription(nameof(TestModel.Score), ListSortDirection.Descending));
 
             Assert.Equal(47, cvs.View.GetItemAt<TestModel>(0).Score);
             Assert.Equal(9, cvs.View.GetItemAt<TestModel>(4).Score);
+        }
+
+        [Fact]
+        public void SortDescriptionsMultipleAscending()
+        {
+            var items = new List<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Chelsey MacCaig", 47),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>()
+            {
+                new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending),
+                new SortDescription(nameof(TestModel.Name), ListSortDirection.Ascending),
+            };
+
+            Assert.Equal("Andrei Epps", cvs.View.GetItemAt<TestModel>(0).Name);
+            Assert.Equal("Dotty Andreopolos", cvs.View.GetItemAt<TestModel>(1).Name);
+        }
+
+        [Fact]
+        public void SourceAddItemWithFilteringAndSorting()
+        {
+            var items = new ObservableCollection<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.Filter = (item) => (item as TestModel).Score > 15;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>()
+            {
+                new SortDescription(nameof(TestModel.Score), ListSortDirection.Ascending),
+            };
+
+            items.Insert(2, new TestModel("Chelsey MacCaig", 47));
+
+            Assert.Equal(3, cvs.View.Count());
+            Assert.Equal("Beryle Blackbourn", cvs.View.GetItemAt<TestModel>(0).Name);
+            Assert.Equal("Chelsey MacCaig", cvs.View.GetItemAt<TestModel>(2).Name);
+        }
+
+        [Fact]
+        public void SourceRemoveItemWithFilteringAndSorting()
+        {
+            var items = new ObservableCollection<TestModel>()
+            {
+                new TestModel("Beryle Blackbourn", 20),
+                new TestModel("Andrei Epps", 9),
+                new TestModel("Chelsey MacCaig", 47),
+                new TestModel("Dotty Andreopolos", 9),
+                new TestModel("Jemmie Chesshire", 36),
+            };
+
+            var cvs = new Rotorsoft.Forms.CollectionViewSource();
+            cvs.Source = items;
+            cvs.Filter = (item) => (item as TestModel).Score > 15;
+            cvs.SortDescriptions = new ObservableCollection<SortDescription>()
+            {
+                new SortDescription(nameof(TestModel.Score), ListSortDirection.Descending),
+            };
+
+            items.RemoveAt(2);
+
+            Assert.Equal(2, cvs.View.Count());
+            Assert.Equal("Jemmie Chesshire", cvs.View.GetItemAt<TestModel>(0).Name);
+            Assert.Equal("Beryle Blackbourn", cvs.View.GetItemAt<TestModel>(1).Name);
         }
     }
 
