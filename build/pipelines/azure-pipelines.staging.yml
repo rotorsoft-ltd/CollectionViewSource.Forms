@@ -1,0 +1,29 @@
+trigger:
+- staging
+
+variables:
+  BASE_VERSION: 1.0.0
+  PREVIEW_LABEL: 'pre'
+  BUILD_NUMBER: $[counter(format('{0}_{1}', variables['BASE_VERSION'], variables['PREVIEW_LABEL']), 1)]
+  NUGET_VERSION: $[format('{0}-{1}{2}', variables['BASE_VERSION'], variables['PREVIEW_LABEL'], variables['BUILD_NUMBER'])]  
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/CollectionViewSource.Forms.sln'
+
+- task: VSBuild@1
+  inputs:
+    solution: '**/CollectionViewSource.Forms.sln'
+    configuration: 'Release'
+    platform: 'Any CPU'
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**/*UnitTests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
