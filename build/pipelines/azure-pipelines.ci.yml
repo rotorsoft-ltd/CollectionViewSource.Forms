@@ -1,8 +1,10 @@
 trigger:
   branches:
-    include: dev
+    include:
+      - dev
   paths:
-    include: src/CollectionViewSource.Forms/*
+    include:
+      - src/CollectionViewSource.Forms/*
 
 pool:
   vmImage: 'windows-latest'

@@ -1,8 +1,10 @@
 trigger:
   branches:
-    include: staging
+    include:
+      - staging
   paths:
-    include: src/CollectionViewSource.Forms/*
+    include:
+      - src/CollectionViewSource.Forms/*
 
 variables:
   BASE_VERSION: 1.0.0
