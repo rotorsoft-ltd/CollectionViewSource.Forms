@@ -14,9 +14,8 @@ steps:
   inputs:
     solution: '**/CollectionViewSource.Forms.sln'
     configuration: 'Release'
-    msbuildArguments: '/t:Build'
+    msbuildArguments: '/restore /t:Build'
     clean: true
-    restoreNugetPackages: true
     
 - task: VSTest@2
   inputs:

@@ -20,9 +20,8 @@ steps:
   inputs:
     solution: '**/CollectionViewSource.Forms.sln'
     configuration: 'Release'
-    msbuildArguments: '/p:Version="$(NUGET_VERSION)" /t:Build;Pack /p:PackageOutputPath="$(Build.ArtifactStagingDirectory)"'
+    msbuildArguments: '/restore /p:Version="$(NUGET_VERSION)" /t:Build;Pack /p:PackageOutputPath="$(Build.ArtifactStagingDirectory)"'
     clean: true
-    restoreNugetPackages: true
     
 - task: VSTest@2
   inputs:
