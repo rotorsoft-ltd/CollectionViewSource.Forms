@@ -37,3 +37,4 @@ steps:
     packagesToPack: '**/CollectionViewSource.Forms.csproj'
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'NUGET_VERSION'
+    configuration: 'Release'
