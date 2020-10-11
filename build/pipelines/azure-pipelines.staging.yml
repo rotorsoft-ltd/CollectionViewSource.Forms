@@ -25,5 +25,15 @@ steps:
 - task: VSTest@2
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**/*UnitTests.dll'
+    testAssemblyVer2: |
+      **\*UnitTests.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
     searchFolder: '$(System.DefaultWorkingDirectory)'
+    
+- task: NuGetCommand@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/CollectionViewSource.Forms.csproj'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'NUGET_VERSION'
