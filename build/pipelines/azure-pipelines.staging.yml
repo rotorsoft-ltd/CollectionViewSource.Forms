@@ -38,3 +38,10 @@ steps:
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'NUGET_VERSION'
     configuration: 'Release'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'Rotorsoft NuGet'
