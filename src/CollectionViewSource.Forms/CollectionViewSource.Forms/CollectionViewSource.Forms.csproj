@@ -23,7 +23,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="..\LICENSE" PackagePath="" Pack="true" />
-  </ItemGroup>	
-
+    <None Include="../../../LICENSE" Pack="true" PackagePath="" />
+</ItemGroup>
+  
 </Project>

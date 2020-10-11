@@ -1,21 +1,21 @@
 trigger:
-- dev
+  branches:
+    include: dev
+  paths:
+    include: src/CollectionViewSource.Forms/*
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/CollectionViewSource.Forms.sln'
-
-- task: VSBuild@1
+- task: MSBuild@1
   inputs:
     solution: '**/CollectionViewSource.Forms.sln'
     configuration: 'Release'
-    platform: 'Any CPU'
-
+    msbuildArguments: '/t:Build'
+    clean: true
+    restoreNugetPackages: true
+    
 - task: VSTest@2
   inputs:
     testSelector: 'testAssemblies'
