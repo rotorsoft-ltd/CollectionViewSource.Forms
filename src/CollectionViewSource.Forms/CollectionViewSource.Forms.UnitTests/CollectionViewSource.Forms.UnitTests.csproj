@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CollectionViewSource.Forms\CollectionViewSource.Forms.csproj" />
+    <ProjectReference Include="..\CollectionViewSource.Forms\CollectionViewSource.Forms.csproj" />
   </ItemGroup>
 
 </Project>

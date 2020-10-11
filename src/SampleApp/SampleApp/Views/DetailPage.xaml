@@ -25,16 +25,19 @@
                         HeightRequest="150"
                         Margin="10"
                         ColumnSpacing="10">
-                        
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
                         <ffImageLoading:CachedImage
-                            Grid.Column="0"          
-                            WidthRequest="100"
-                            HeightRequest="100"
+                            Grid.Row="0"          
+                            Grid.RowSpan="2"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Start"
+                            WidthRequest="80"
+                            HeightRequest="80"
                             Source="{Binding Avatar}"
                             LoadingPlaceholder="PlaceholderAvatar.png"
                             ErrorPlaceholder="PlaceholderAvatar.png"
@@ -49,7 +52,7 @@
                         </ffImageLoading:CachedImage>
 
                         <StackLayout
-                            Grid.Column="1">
+                            Grid.Row="1">
                             
                             <Label Text="LAST NAME" />
                             <Label Text="{Binding LastName}" HorizontalOptions="Fill" />

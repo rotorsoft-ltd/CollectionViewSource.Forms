@@ -1,0 +1,23 @@
+trigger:
+- dev
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/CollectionViewSource.Forms.sln'
+
+- task: VSBuild@1
+  inputs:
+    solution: '**/CollectionViewSource.Forms.sln'
+    configuration: 'Release'
+    platform: 'Any CPU'
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**/*UnitTests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
