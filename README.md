@@ -27,7 +27,8 @@ To use a `CollectionViewSource` object from XAML, create it as a static resource
   <ContentPage.Resources>
       <rotorsoft:CollectionViewSource
           x:Key="DataSource"
-          BindingContext="{Binding Path=BindingContext, Source={x:Reference _page}, Mode=OneWay}" />
+          BindingContext="{Binding Path=BindingContext, Source={x:Reference _page}, Mode=OneWay}" 
+          Source="{Binding Items, Mode=OneWay}" />
   </ContentPage.Resources>  
   ```
   
@@ -42,8 +43,7 @@ To use a `CollectionViewSource` object from XAML, create it as a static resource
   
   ```xaml
   <rotorsoft:CollectionViewSource
-      x:Key="DataSource"
-      BindingContext="{Binding Path=BindingContext, Source={x:Reference _page}, Mode=OneWay}" >
+      x:Key="XamlDataSource">
       <rotorsoft:CollectionViewSource.Source>
           <collections:List x:TypeArguments="x:String">
               <x:String>Lorem</x:String>
@@ -63,7 +63,7 @@ To use a `CollectionViewSource` object from XAML, create it as a static resource
   
   ```xaml
   <rotorsoft:CollectionViewSource
-      x:Key="XamlDataSource"
+      x:Key="BindingsDataSource"
       BindingContext="{Binding Path=BindingContext, Source={x:Reference _page}, Mode=OneWay}"
       Source="{Binding Items, Mode=OneWay}"
       Filter="{Binding Filter, Mode=OneWay}"
