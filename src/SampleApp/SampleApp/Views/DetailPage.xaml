@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:SampleApp.ViewModels"
+             xmlns:rotorsoft="clr-namespace:Rotorsoft.Forms;assembly=CollectionViewSource.Forms"
+             xmlns:models="clr-namespace:SampleApp.Models"
+             xmlns:ffImageLoading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms" xmlns:transformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
+             x:Class="SampleApp.Views.DetailPage"
+             x:DataType="viewmodels:MainPageViewModel"
+             x:Name="_root">
+    
+    <ContentPage.Resources>
+        <rotorsoft:CollectionViewSource
+            x:Key="DataSource"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference _root}, Mode=OneWay}"
+            Source="{Binding Items, Mode=OneWay}"
+            Filter="{Binding Filter, Mode=OneWay}" />
+    </ContentPage.Resources>
+
+    <Grid>
+        <CollectionView ItemsSource="{Binding View, Source={StaticResource DataSource}}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PersonModel">
+                    <Grid
+                        HeightRequest="150"
+                        Margin="10"
+                        ColumnSpacing="10">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <ffImageLoading:CachedImage
+                            Grid.Row="0"          
+                            Grid.RowSpan="2"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Start"
+                            WidthRequest="80"
+                            HeightRequest="80"
+                            Source="{Binding Avatar}"
+                            LoadingPlaceholder="PlaceholderAvatar.png"
+                            ErrorPlaceholder="PlaceholderAvatar.png"
+                            DownsampleToViewSize="True">
+
+                            <ffImageLoading:CachedImage.Transformations>
+                                <transformations:CircleTransformation
+                                    BorderHexColor="#CCCCCC"
+                                    BorderSize="2" />
+                            </ffImageLoading:CachedImage.Transformations>
+                            
+                        </ffImageLoading:CachedImage>
+
+                        <StackLayout
+                            Grid.Row="1">
+                            
+                            <Label Text="LAST NAME" />
+                            <Label Text="{Binding LastName}" HorizontalOptions="Fill" />
+
+                            <Label Text="FIRST NAME" />
+                            <Label Text="{Binding FirstName}" HorizontalOptions="Fill" />
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackLayout
+                                    Grid.Column="0"
+                                    Orientation="Vertical">
+                                    
+                                    <Label Text="SEX" />
+                                    <Label Text="{Binding Sex}" HorizontalOptions="Fill" />
+                                    
+                                </StackLayout>
+
+                                <StackLayout 
+                                    Grid.Column="1"
+                                    Orientation="Vertical">
+
+                                    <Label Text="NATIONALITY" />
+                                    <Label Text="{Binding Country}" HorizontalOptions="Fill" />
+                                    
+                                </StackLayout>
+
+                            </Grid>
+
+                            <Label Text="DATE OF BIRTH" />
+                            <Label Text="{Binding Dob}" HorizontalOptions="Fill" />
+                        </StackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

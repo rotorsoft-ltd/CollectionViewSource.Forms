@@ -1,0 +1,27 @@
+trigger:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - src/CollectionViewSource.Forms/*
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: MSBuild@1
+  inputs:
+    solution: '**/CollectionViewSource.Forms.sln'
+    configuration: 'Release'
+    msbuildArguments: '/restore /t:Build'
+    clean: true
+    
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*UnitTests.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+    searchFolder: '$(System.DefaultWorkingDirectory)'

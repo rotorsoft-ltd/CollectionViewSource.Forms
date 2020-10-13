@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  xmlns:viewmodels="clr-namespace:SampleApp.ViewModels"
+                  xmlns:views="clr-namespace:SampleApp.Views"
+                  x:Class="SampleApp.Views.MainPage"
+                  MasterBehavior="Default"
+                  x:Name="_root">
+
+    <MasterDetailPage.BindingContext>
+        <viewmodels:MainPageViewModel />
+    </MasterDetailPage.BindingContext>
+
+    <MasterDetailPage.Master>
+        <views:SettingsFlyoutPage
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference _root}, Mode=OneWay}" />
+    </MasterDetailPage.Master>
+
+    <MasterDetailPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <views:DetailPage 
+                    BindingContext="{Binding Path=BindingContext, Source={x:Reference _root}, Mode=OneWay}" />
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+
+</MasterDetailPage>
