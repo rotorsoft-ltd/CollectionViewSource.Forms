@@ -69,3 +69,11 @@ To use a `CollectionViewSource` object from XAML, create it as a static resource
       Filter="{Binding Filter, Mode=OneWay}"
       SortDescriptions="{Binding SortDescriptions, Mode=OneWay}" />
   ```
+
+## Features
+Status | Feature      | Notes
+-------|--------------|--------------------|
+✅    | Filtering    | 
+✅    | Sorting      | 
+⬜    | Grouping     | Work in progress
+❌    | Navigation    | Out of scope - however, if you really need this feature, pull requests are welcome!
