@@ -1,4 +1,5 @@
 trigger:
+  pr: none
   branches:
     include:
       - master
@@ -9,7 +10,7 @@ trigger:
 variables:
   BASE_VERSION: 1.0.0
   BUILD_NUMBER: $[counter(format('{0}', variables['BASE_VERSION']), 1)]
-  NUGET_VERSION: $[format('{0}-{1}', variables['BASE_VERSION'], variables['BUILD_NUMBER'])]  
+  NUGET_VERSION: $[format('{0}.{1}', variables['BASE_VERSION'], variables['BUILD_NUMBER'])]  
 
 pool:
   vmImage: 'windows-latest'
