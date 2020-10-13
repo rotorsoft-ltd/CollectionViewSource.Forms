@@ -1,7 +1,9 @@
+pr: none
+
 trigger:
   branches:
     include:
-      - staging
+      - staging  
   paths:
     include:
       - src/CollectionViewSource.Forms/*
