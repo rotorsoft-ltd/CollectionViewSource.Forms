@@ -8,6 +8,11 @@ namespace Rotorsoft.Forms
         private string _propertyName;
         private ListSortDirection _direction;
 
+        public SortDescription()
+            : this(string.Empty, ListSortDirection.Descending)
+        {
+        }
+
         public SortDescription(string propertyName, ListSortDirection direction)
         {
             if (direction != ListSortDirection.Ascending && direction != ListSortDirection.Descending)

@@ -31,7 +31,7 @@ namespace Rotorsoft.Forms
 
         public static BindableProperty SortDescriptionsProperty = BindableProperty.Create(
             nameof(SortDescriptions),
-            typeof(ObservableCollection<SortDescription>),
+            typeof(IList<SortDescription>),
             typeof(CollectionViewSource),
             defaultValue: null,
             propertyChanged: OnSortDescriptionsChanged);
@@ -59,9 +59,9 @@ namespace Rotorsoft.Forms
             private set => SetValue(ViewProperty, value);
         }
 
-        public ObservableCollection<SortDescription> SortDescriptions
+        public IList<SortDescription> SortDescriptions
         {
-            get => (ObservableCollection<SortDescription>)GetValue(SortDescriptionsProperty);
+            get => (IList<SortDescription>)GetValue(SortDescriptionsProperty);
             set => SetValue(SortDescriptionsProperty, value);
         }
 
@@ -141,11 +141,11 @@ namespace Rotorsoft.Forms
             }
         }
 
-        private void OnSortDescriptionsChanged(ObservableCollection<SortDescription> oldValue, ObservableCollection<SortDescription> newValue)
+        private void OnSortDescriptionsChanged(IList<SortDescription> oldValue, IList<SortDescription> newValue)
         {
-            if (oldValue != null)
+            if (oldValue is INotifyCollectionChanged oldNotifyCollection)
             {
-                oldValue.CollectionChanged -= SortDescriptions_CollectionChanged;
+                oldNotifyCollection.CollectionChanged -= SortDescriptions_CollectionChanged;
             }
 
             if (View != null)
@@ -153,9 +153,9 @@ namespace Rotorsoft.Forms
                 ApplyPropertiesToView(View);
             }
 
-            if (newValue != null)
+            if (newValue is INotifyCollectionChanged newNotifyCollection)
             {
-                newValue.CollectionChanged += SortDescriptions_CollectionChanged;
+                newNotifyCollection.CollectionChanged += SortDescriptions_CollectionChanged;
             }
         }
 
@@ -182,7 +182,7 @@ namespace Rotorsoft.Forms
         {
             var collectionViewSource = bindableObject as CollectionViewSource;
 
-            collectionViewSource?.OnSortDescriptionsChanged(oldValue as ObservableCollection<SortDescription>, newValue as ObservableCollection<SortDescription>);
+            collectionViewSource?.OnSortDescriptionsChanged(oldValue as IList<SortDescription>, newValue as IList<SortDescription>);
         }
     }
 }
