@@ -1,0 +1,41 @@
+name: $(version)
+
+pr:
+  branches:
+    exclude: [staging, master]
+
+trigger:
+  branches:
+    include:
+      - dev
+      - staging
+      - master
+  paths:
+    include:
+      - src/CollectionViewSource.Forms/*
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  BASE_VERSION: 1.0.0
+  publishPackage: ${{ or(eq(variables['Build.SourceBranchName'], 'staging'),eq(variables['Build.SourceBranchName'], 'master')) }}
+  ${{ if eq(variables['Build.SourceBranchName'], 'staging') }}:
+    PREVIEW_LABEL: 'pre'
+    BUILD_NUMBER: $[counter(format('{0}_{1}', variables['BASE_VERSION'], variables['PREVIEW_LABEL']), 1)]
+    NUGET_VERSION: $[format('{0}-{1}{2}', variables['BASE_VERSION'], variables['PREVIEW_LABEL'], variables['BUILD_NUMBER'])]
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    BUILD_NUMBER: $[counter(format('{0}', variables['BASE_VERSION']), 1)]
+    NUGET_VERSION: $[format('{0}.{1}', variables['BASE_VERSION'], variables['BUILD_NUMBER'])]
+  ${{ if eq(variables.publishPackage, true) }}:
+    version:  ${{ variables.NUGET_VERSION }}
+  ${{ if ne(variables.publishPackage, true) }}:
+    version: ${{ variables.BASE_VERSION }}-dev
+
+steps:
+  - template: pipelines/build-template.yml
+    parameters:
+      publishPackage: '${{ variables.publishPackage }}'
+      version: '$(version)'
+  - ${{ if eq(variables.publishPackage, true) }}:
+    - template: pipelines/release-template.yml

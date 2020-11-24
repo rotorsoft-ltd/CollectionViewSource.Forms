@@ -1,0 +1,41 @@
+parameters:
+- name: 'publishPackage'
+  type: boolean
+- name: 'version'
+  type: string
+  default: ''
+
+steps:
+- task: MSBuild@1
+  displayName: 'Restore'
+  inputs:
+    solution: '$(Build.SourcesDirectory)/src/CollectionViewSource.Forms/CollectionViewSource.Forms.sln'
+    configuration: 'Release'
+    msbuildArguments: '/restore'
+    clean: true
+- task: MSBuild@1
+  displayName: 'Build'
+  inputs:
+    solution: '$(Build.SourcesDirectory)/src/CollectionViewSource.Forms/CollectionViewSource.Forms.sln'
+    configuration: 'Release'
+    msbuildArguments: '/t:Build'
+    clean: true 
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*UnitTests.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+- ${{ if eq(parameters.publishPackage, true) }}:
+  - task: NuGetCommand@2
+    displayName: 'Pack'
+    inputs:
+      command: 'custom'
+      arguments: 'pack $(Build.SourcesDirectory)/src/CollectionViewSource.Forms/CollectionViewSource.Forms/CollectionViewSource.Forms.csproj -version "${{ parameters.version }}" -Properties Configuration=Release -OutputDirectory $(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'collectionviewsource.forms-drop'
+      publishLocation: 'Container'

@@ -1,0 +1,8 @@
+steps: 
+- task: NuGetCommand@2
+  displayName: 'Upload to feed'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'Rotorsoft NuGet'
