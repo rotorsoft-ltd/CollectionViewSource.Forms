@@ -77,3 +77,6 @@ Status | Feature      | Notes
 ✅    | Sorting      | 
 ⬜    | Grouping     | Work in progress
 ❌    | Navigation    | Out of scope - however, if you really need this feature, pull requests are welcome!
+
+## Acknowledgements
+Thanks to Andrés Pérez ([@khnumdev](https://github.com/khnumdev)) for tidying up and making the build pipeline scripts reusable.
