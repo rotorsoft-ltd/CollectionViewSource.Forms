@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 
 namespace Rotorsoft.Forms
 {
-    internal class ListCollectionView : CollectionView, IComparer, IDisposable
+    internal class ListCollectionView : CollectionView, IComparer, IDisposable, IList
     {
         private IList _list;
         private ArrayList _shadowCollection;
@@ -132,5 +132,33 @@ namespace Rotorsoft.Forms
                 _disposedValue = true;
             }
         }
+
+        #region IList implementation
+        public bool IsFixedSize => _list.IsFixedSize;
+
+        public bool IsReadOnly => _list.IsReadOnly;
+
+        public int Count => _list.Count;
+
+        public bool IsSynchronized => _list.IsSynchronized;
+
+        public object SyncRoot => _list.SyncRoot;
+
+        public object this[int index] { get => _list[index]; set => _list[index] = value; }
+
+        public int Add(object value) => _list.Add(value);
+
+        public void Clear() => _list.Clear();
+
+        public int IndexOf(object value) => _list.IndexOf(value);
+
+        public void Insert(int index, object value) => _list.Insert(index, value);
+
+        public void Remove(object value) => _list.Remove(value);
+
+        public void RemoveAt(int index) => _list.RemoveAt(index);
+
+        public void CopyTo(Array array, int index) => _list.CopyTo(array, index);
+        #endregion
     }
 }
